@@ -5,6 +5,9 @@
 
 from odoo.addons.openupgrade_records.lib import apriori
 from openupgradelib import openupgrade
+import logging
+
+_logger = logging.getLogger(__name__)
 
 model_renames_product = [
     ('product.uom', 'uom.uom'),
@@ -210,6 +213,7 @@ def fix_double_membership(cr):
 
 @openupgrade.migrate(use_env=True)
 def migrate(env, version):
+    # fix_users_belong_two_groups(env)
     openupgrade.remove_tables_fks(env.cr, _obsolete_tables)
     # Deactivate the noupdate flag (hardcoded on initial SQL load) for allowing
     # to update changed data on this group.
