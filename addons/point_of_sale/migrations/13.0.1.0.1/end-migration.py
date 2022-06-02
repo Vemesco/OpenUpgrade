@@ -19,6 +19,9 @@ def create_pos_payment_methods(env):
                WHERE pos_session_id is not null
            """)
         journal_ids = [aj[0] for aj in env.cr.fetchall()]
+
+        openupgrade.lift_constraints(env.cr, 'pos_payment_method', 'receivable_account_id')
+
         if journal_ids:
             openupgrade.logged_query(env.cr, """
                     INSERT INTO pos_payment_method
