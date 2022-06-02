@@ -22,5 +22,5 @@ def switch_noupdate_records(env):
 def migrate(env, version):
     openupgrade.load_data(
         env.cr, "website_blog", "migrations/13.0.1.0/noupdate_changes.xml")
-    openupgrade.rename_xmlids(env.cr, _xmlid_renames)
+    # openupgrade.rename_xmlids(env.cr, _xmlid_renames)
     switch_noupdate_records(env)
