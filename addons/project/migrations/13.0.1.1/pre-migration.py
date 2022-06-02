@@ -51,7 +51,7 @@ def fill_project_task_company_id(cr):
 
 @openupgrade.migrate()
 def migrate(env, version):
-    openupgrade.rename_xmlids(env.cr, _xmlid_renames)
+    # openupgrade.rename_xmlids(env.cr, _xmlid_renames)
     update_module_moved_fields(env)
     fill_project_task_company_id(env.cr)
     openupgrade.set_xml_ids_noupdate_value(
