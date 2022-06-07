@@ -14,13 +14,22 @@ def _set_default_rating_status_period(env):
 
 def fast_fill_stored_calculated_fields(env):
     """Faster way"""
-    openupgrade.logged_query(
-        env.cr,
-        """
-        ALTER TABLE project_task
-        ADD COLUMN partner_phone varchar,
-        ADD COLUMN partner_email varchar""",
-    )
+    if not openupgrade.column_exists(env.cr, 'project_task', 'partner_phone'):
+        openupgrade.logged_query(
+            env.cr,
+            """
+            ALTER TABLE project_task
+            ADD COLUMN partner_phone varchar,
+            ADD COLUMN partner_email varchar""",
+        )
+    if not openupgrade.column_exists(env.cr, 'project_task', 'partner_email'):
+        openupgrade.logged_query(
+            env.cr,
+            """
+            ALTER TABLE project_task
+            ADD COLUMN partner_email varchar""",
+        )
+
     openupgrade.logged_query(
         env.cr,
         """
@@ -33,14 +42,15 @@ def fast_fill_stored_calculated_fields(env):
 
 @openupgrade.migrate()
 def migrate(env, version):
-    openupgrade.copy_columns(
-        env.cr,
-        {
-            "project_project": [
-                ("rating_status", None, None),
-            ],
-        },
-    )
+    if not openupgrade.column_exists(env.cr, 'project_project', 'rating_status'):
+        openupgrade.copy_columns(
+            env.cr,
+            {
+                "project_project": [
+                    ("rating_status", None, None),
+                ],
+            },
+        )
     openupgrade.rename_fields(
         env,
         [
@@ -61,19 +71,22 @@ def migrate(env, version):
     _set_default_rating_status_period(env)
     # Manually create tables for avoiding the automatic launch of the compute or default
     # FK constraints and indexes will be added by ORM
-    openupgrade.logged_query(
-        env.cr,
-        """CREATE TABLE project_allowed_internal_users_rel
-        (project_project_id INTEGER, res_users_id INTEGER)""",
-    )
-    openupgrade.logged_query(
-        env.cr,
-        """CREATE TABLE project_allowed_portal_users_rel
-        (project_project_id INTEGER, res_users_id INTEGER)""",
-    )
-    openupgrade.logged_query(
-        env.cr,
-        """CREATE TABLE project_task_res_users_rel
-        (project_task_id INTEGER, res_users_id INTEGER)""",
-    )
+    if not openupgrade.table_exists(env.cr, 'project_allowed_internal_users_rel'):
+        openupgrade.logged_query(
+            env.cr,
+            """CREATE TABLE project_allowed_internal_users_rel
+            (project_project_id INTEGER, res_users_id INTEGER)""",
+        )
+    if not openupgrade.table_exists(env.cr, 'project_allowed_portal_users_rel'):
+        openupgrade.logged_query(
+            env.cr,
+            """CREATE TABLE project_allowed_portal_users_rel
+            (project_project_id INTEGER, res_users_id INTEGER)""",
+        )
+    if not openupgrade.table_exists(env.cr, 'project_task_res_users_rel'):
+        openupgrade.logged_query(
+            env.cr,
+            """CREATE TABLE project_task_res_users_rel
+            (project_task_id INTEGER, res_users_id INTEGER)""",
+        )
     fast_fill_stored_calculated_fields(env)
