@@ -31,6 +31,7 @@ def recompute_stock_picking_scheduled_date(env):
     picking_ids = [pick[0] for pick in env.cr.fetchall()]
     if picking_ids:
         pickings = env["stock.picking"].browse(picking_ids)
+        pickings = pickings.filtered(lambda r: r.state not in ('done', 'cancel'))
         pickings._compute_scheduled_date()
 
 

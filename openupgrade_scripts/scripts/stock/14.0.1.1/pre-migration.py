@@ -20,12 +20,13 @@ _xmlid_renames = [
 
 
 def fast_precreate_orderpoint_product_category_id(env):
-    openupgrade.logged_query(
-        env.cr,
-        """
-        ALTER TABLE stock_warehouse_orderpoint
-        ADD COLUMN product_category_id integer""",
-    )
+    if not openupgrade.column_exists(env.cr,'stock_warehouse_orderpoint', 'product_category_id'):
+        openupgrade.logged_query(
+            env.cr,
+            """
+            ALTER TABLE stock_warehouse_orderpoint
+            ADD COLUMN product_category_id integer""",
+        )
     openupgrade.logged_query(
         env.cr,
         """
@@ -40,7 +41,7 @@ def fast_precreate_orderpoint_product_category_id(env):
 @openupgrade.migrate()
 def migrate(env, version):
     openupgrade.copy_columns(env.cr, _column_copies)
-    
+
     if not openupgrade.column_exists(env.cr, 'stock_move', 'date_deadline'):
         openupgrade.rename_fields(env, _field_renames)
     openupgrade.rename_xmlids(env.cr, _xmlid_renames)
