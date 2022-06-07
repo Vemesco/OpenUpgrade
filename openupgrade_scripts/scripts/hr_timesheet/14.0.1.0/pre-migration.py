@@ -5,7 +5,9 @@ from openupgradelib import openupgrade
 
 
 def _fill_task_overtime(env):
-    openupgrade.logged_query(env.cr, "ALTER TABLE project_task ADD overtime NUMERIC")
+    if not openupgrade.column_exists(env.cr, 'project_task', 'overtime'):
+        openupgrade.logged_query(env.cr, "ALTER TABLE project_task ADD overtime NUMERIC")
+
     openupgrade.logged_query(
         env.cr,
         """UPDATE project_task SET overtime =

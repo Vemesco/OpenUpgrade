@@ -40,7 +40,9 @@ def fast_precreate_orderpoint_product_category_id(env):
 @openupgrade.migrate()
 def migrate(env, version):
     openupgrade.copy_columns(env.cr, _column_copies)
-    openupgrade.rename_fields(env, _field_renames)
+    
+    if not openupgrade.column_exists(env.cr, 'stock_move', 'date_deadline'):
+        openupgrade.rename_fields(env, _field_renames)
     openupgrade.rename_xmlids(env.cr, _xmlid_renames)
     fast_precreate_orderpoint_product_category_id(env)
     # Disappeared constraint

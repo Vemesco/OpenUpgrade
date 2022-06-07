@@ -67,7 +67,7 @@ def _fill_res_users_m2m_tables(env):
 
 @openupgrade.migrate()
 def migrate(env, version):
-    map_project_project_rating_status(env)
+    # map_project_project_rating_status(env)
     _fill_res_users_m2m_tables(env)
     openupgrade.load_data(env.cr, "project", "14.0.1.1/noupdate_changes.xml")
     openupgrade.delete_records_safely_by_xml_id(
