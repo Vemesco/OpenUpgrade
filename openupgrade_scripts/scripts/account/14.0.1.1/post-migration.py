@@ -387,8 +387,8 @@ def fill_company_account_journal_suspense_account_id(env):
         company.account_journal_suspense_account_id = account
     journals = (
         env["account.journal"]
-        .with_context(active_test=False)
-        .search([("type", "in", ("bank", "cash")), ("company_id", "in", companies.ids)])
+            .with_context(active_test=False)
+            .search([("type", "in", ("bank", "cash")), ("company_id", "in", companies.ids)])
     )
     journals._compute_suspense_account_id()
 
@@ -424,7 +424,7 @@ def fill_statement_lines_with_no_move(env):
                 "journal_id": st_line.statement_id.journal_id.id,
                 "company_id": st_line.statement_id.company_id.id,
                 "currency_id": st_line.statement_id.journal_id.currency_id.id
-                or st_line.statement_id.company_id.currency_id.id,
+                               or st_line.statement_id.company_id.currency_id.id,
             }
         )
         st_line.move_id = move
@@ -476,8 +476,8 @@ def fill_statement_lines_with_no_move(env):
 def fill_account_journal_payment_credit_debit_account_id(env):
     journals = (
         env["account.journal"]
-        .with_context(active_test=False)
-        .search([("type", "in", ("bank", "cash"))])
+            .with_context(active_test=False)
+            .search([("type", "in", ("bank", "cash"))])
     )
     current_assets_type = env.ref("account.data_account_type_current_assets")
     for journal in journals:
@@ -506,7 +506,7 @@ def fill_account_journal_payment_credit_debit_account_id(env):
         )
         journal.payment_credit_account_id = (
             env["account.account"]
-            .create(
+                .create(
                 {
                     "name": _("Outstanding Payments"),
                     "code": env["account.account"]._search_new_account_code(
@@ -517,7 +517,7 @@ def fill_account_journal_payment_credit_debit_account_id(env):
                     "company_id": journal.company_id.id,
                 }
             )
-            .id
+                .id
         )
 
 
@@ -615,7 +615,7 @@ def fill_account_payment_with_no_move(env):
                 "journal_id": journal.id,
                 "company_id": journal.company_id.id,
                 "currency_id": journal.currency_id.id
-                or journal.company_id.currency_id.id,
+                               or journal.company_id.currency_id.id,
             }
         )
         payment.move_id = move
@@ -684,6 +684,34 @@ def fill_account_move_line_date(env):
     )
 
 
+def migration_account_partial_reconcile(env):
+    openupgrade.logged_query(
+        env.cr, """update account_partial_reconcile as apr
+        set (credit_currency_id) = (
+	    select
+		    case
+			    when aml.currency_id notnull then aml.currency_id
+			    else aml.company_currency_id
+		    end
+	    from account_move_line aml
+	    where apr.credit_move_id = aml.id
+        )""",
+    )
+
+    openupgrade.logged_query(
+        env.cr, """update account_partial_reconcile as apr
+            set (debit_currency_id) = (
+    	    select
+    		    case
+    			    when aml.currency_id notnull then aml.currency_id
+    			    else aml.company_currency_id
+    		    end
+    	    from account_move_line aml
+    	    where apr.debit_move_id = aml.id
+            )""",
+    )
+
+
 @openupgrade.migrate()
 def migrate(env, version):
     fill_account_journal_posted_before(env)
@@ -715,3 +743,4 @@ def migrate(env, version):
         "account",
         ["email_template_edi_invoice", "mail_template_data_payment_receipt"],
     )
+    migration_account_partial_reconcile(env)

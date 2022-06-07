@@ -124,6 +124,14 @@ def remove_constrains_reconcile_models(env):
         """,
     )
 
+    # openupgrade.logged_query(
+    #     env.cr,
+    #     """
+    #     ALTER TABLE account_move_line
+    #     ADD COLUMN matching_number character varying
+    #     """,
+    # )
+
 
 def copy_fields(env):
     openupgrade.rename_columns(
@@ -443,6 +451,52 @@ def delete_xmlid_existing_groups(env):
     # - merge repeated groups
 
 
+def create_compute_fields_new_columns(env):
+    """Faster way, avoid compute"""
+    data = {
+        # 'account_move_line': [
+        #     ('matching_number', 'character varying'),
+        #     ('amount_residual', 'numeric'),
+        #     ('amount_residual_currency', 'numeric'),
+        # ],
+        'account_partial_reconcile': [
+            ('debit_currency_id', 'numeric'),
+            ('credit_currency_id', 'numeric'),
+        ],
+        'account_payment': [
+            ('is_reconciled', 'boolean'),
+            ('is_matched', 'boolean'),
+        ]
+    }
+    for table, column_spec_list in data.items():
+        for column, column_type in column_spec_list:
+            if not openupgrade.column_exists(env.cr, table, column):
+                openupgrade.logged_query(
+                    env.cr, """
+                    ALTER TABLE {table}
+                    ADD COLUMN {column} {column_type}""".format(
+                        table=table, column=column, column_type=column_type
+                    ),
+                )
+
+    # if openupgrade.column_exists(env.cr, 'account_move_line', 'matching_number'):
+    #     openupgrade.logged_query(
+    #         env.cr, """update account_move_line as aml
+    #         set matching_number = (
+    #         case when aml.full_reconcile_id notnull then (select name from account_full_reconcile where id = aml.full_reconcile_id )
+    #             when exists (select 1 from account_partial_reconcile apr where apr.full_reconcile_id = aml.full_reconcile_id)  then 'P'
+    #             else null
+    #         end)"""
+    #     )
+
+
+def set_account_current_earnings(env):
+    openupgrade.logged_query(
+        env.cr,
+        """update account_account as aa set user_type_id = 11 where aa.user_type_id = 12"""
+    )
+
+
 @openupgrade.migrate()
 def migrate(env, version):
     openupgrade.set_xml_ids_noupdate_value(
@@ -452,6 +506,7 @@ def migrate(env, version):
     rename_fields(env)
     m2m_tables_account_journal_renamed(env)
     remove_constrains_reconcile_models(env)
+    create_compute_fields_new_columns(env)
     add_move_id_field_account_payment(env)
     add_move_id_field_account_bank_statement_line(env)
     add_edi_state_field_account_move(env)
@@ -465,3 +520,4 @@ def migrate(env, version):
     openupgrade.lift_constraints(
         env.cr, "account_bank_statement_line", "partner_account_id"
     )
+    set_account_current_earnings(env)
