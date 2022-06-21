@@ -44,6 +44,11 @@ renamed_modules = {
     # OCA/server-tools
     "openupgrade_records": "upgrade_analysis",
     # OCA/...
+    'VMC_Theme': 'vmc_theme',
+    'VMC_depart_in_categ': 'vmc_depart_in_categ',
+    'VMC_pricelist_for_user': 'vmc_pricelist_for_user',
+    'VMC_unique_partner': 'vmc_unique_partner',
+    'account_accountant': 'om_account_accountant',
 }
 
 # Merged modules contain a mapping from old module names to other,
@@ -82,6 +87,8 @@ merged_modules = {
     # OCA/website
     "website_cookie_notice": "website",
     # OCA/...
+    'VMC_group_buttom_sale_order': 'contacts_security',
+    'VMC_price_edi_group': 'contacts_security'
 }
 
 # only used here for upgrade_analysis

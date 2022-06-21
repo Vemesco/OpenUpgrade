@@ -711,7 +711,6 @@ def migration_account_partial_reconcile(env):
             )""",
     )
 
-
 @openupgrade.migrate()
 def migrate(env, version):
     fill_account_journal_posted_before(env)
@@ -744,3 +743,4 @@ def migrate(env, version):
         ["email_template_edi_invoice", "mail_template_data_payment_receipt"],
     )
     migration_account_partial_reconcile(env)
+
