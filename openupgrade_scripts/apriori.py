@@ -48,7 +48,6 @@ renamed_modules = {
     'VMC_depart_in_categ': 'vmc_depart_in_categ',
     'VMC_pricelist_for_user': 'vmc_pricelist_for_user',
     'VMC_unique_partner': 'vmc_unique_partner',
-    'account_accountant': 'om_account_accountant',
 }
 
 # Merged modules contain a mapping from old module names to other,
