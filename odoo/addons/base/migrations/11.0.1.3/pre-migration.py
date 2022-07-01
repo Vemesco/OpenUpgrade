@@ -137,6 +137,19 @@ def rename_mass_mailing_event(env):
             merge_modules=True)
 
 
+def remove_inconsistent_groups(env):
+    env.cr.execute("""
+        delete from res_groups_users_rel
+        where uid in (
+	    select uid from res_groups_users_rel 
+	        where gid in (48,49)
+	        group by uid
+	        having count(uid) > 1
+        )
+        and gid = 49
+    """)
+
+
 @openupgrade.migrate()
 def migrate(env, version):
     openupgrade.remove_tables_fks(env.cr, _obsolete_tables)
@@ -185,3 +198,4 @@ def migrate(env, version):
     # Rename 'mass_mailing_event' module to not collide with the new
     # core module with the same name.
     rename_mass_mailing_event(env)
+    remove_inconsistent_groups(env)
