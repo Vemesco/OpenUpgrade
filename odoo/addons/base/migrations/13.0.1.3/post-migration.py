@@ -112,6 +112,11 @@ def company_missing_favicons(env):
         "favicon": Company._get_default_favicon(original=True)
     })
 
+def remove_inconsistent_account(env):
+    env.cr.execute("""
+        delete from account_account where id in (552, 29)
+    """)
+
 
 @openupgrade.migrate()
 def migrate(env, version):
@@ -131,3 +136,4 @@ def migrate(env, version):
         UPDATE ir_model_data SET noupdate=True
         WHERE  module='base' AND name='group_user'""",
     )
+    remove_inconsistent_account(env)
