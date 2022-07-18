@@ -11,7 +11,7 @@ renamed_modules = {
     # OCA/account-invoice-reporting
     "account_invoice_comment_template": "account_comment_template",
     # OCA/bank-statement-import
-    "account_bank_statement_import": "account_statement_import",  # from odoo
+    "account_bank_statement_import": "om_account_bank_statement_import",  # from odoo
     "account_bank_statement_import_bypass_check": "account_statement_import_bypass_check",  # noqa: B950
     "account_bank_statement_clear_partner": "account_statement_clear_partner",
     "account_bank_statement_import_camt_details": "account_statement_import_camt_details",  # noqa: B950
@@ -48,6 +48,10 @@ renamed_modules = {
     'VMC_depart_in_categ': 'vmc_depart_in_categ',
     'VMC_pricelist_for_user': 'vmc_pricelist_for_user',
     'VMC_unique_partner': 'vmc_unique_partner',
+    'payroll': 'om_payroll',
+    'payroll_account': 'om_payroll_account',
+    'account_accountant': 'om_account_accountant',
+    'account_budget_oca': 'om_account_budget',
 }
 
 # Merged modules contain a mapping from old module names to other,
