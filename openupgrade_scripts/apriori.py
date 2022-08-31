@@ -48,8 +48,8 @@ renamed_modules = {
     'VMC_depart_in_categ': 'vmc_depart_in_categ',
     'VMC_pricelist_for_user': 'vmc_pricelist_for_user',
     'VMC_unique_partner': 'vmc_unique_partner',
-    'payroll': 'om_payroll',
-    'payroll_account': 'om_payroll_account',
+    'payroll': 'om_hr_payroll',
+    'payroll_account': 'om_hr_payroll_account',
     'account_accountant': 'om_account_accountant',
     'account_budget_oca': 'om_account_budget',
 }
